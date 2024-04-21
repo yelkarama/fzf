@@ -65,9 +65,15 @@ jobs:
     - name: Download deb package
       uses: actions/download-artifact@v2
       with:
-        name: fzf.deb
+        name: fzf_${{ steps.build-deb.outputs.version }}_amd64.deb
         path: .
 
+    - name: Install deb package and run commands
+      run: |
+        sudo dpkg -i fzf_${{ steps.build-deb.outputs.version }}_amd64.deb
+        fzf --version
+        eval $(fzf --bash)
+    
     - name: Install Ruby gems
       run: sudo gem install --no-document minitest:5.17.0 rubocop:1.43.0 rubocop-minitest:0.25.1 rubocop-performance:1.15.2
 
