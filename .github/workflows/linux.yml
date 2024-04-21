@@ -42,7 +42,8 @@ jobs:
     - name: Build deb package
       id: build-deb
       run: |
-        version=$(git describe --tags)
+        # version=$(git describe --tags)
+        version=$(git rev-parse --short HEAD)
         fpm -s dir -t deb -n fzf -v $version --prefix /usr .
         echo "::set-output name=version::$version"
 
