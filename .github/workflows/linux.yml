@@ -46,6 +46,7 @@ jobs:
         version=$(git describe --tags || git rev-parse --short HEAD)
         fpm -s dir -t deb -n fzf -v $version --prefix /usr .
         echo "{VERSION}={$version}" >> "$GITHUB_OUTPUT"
+        echo $GITHUB_OUTPUT
 
     - name: Upload deb package
       id: upload-deb
