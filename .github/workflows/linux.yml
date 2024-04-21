@@ -73,6 +73,7 @@ jobs:
         sudo dpkg -i fzf_${{ steps.build-deb.outputs.version }}_amd64.deb
         fzf --version
         eval $(fzf --bash)
+        dpkg -L fzf
     
     - name: Install Ruby gems
       run: sudo gem install --no-document minitest:5.17.0 rubocop:1.43.0 rubocop-minitest:0.25.1 rubocop-performance:1.15.2
