@@ -13,7 +13,6 @@ permissions:
 
 env:
   LANG: C.UTF-8
-  DEB_VERSION: ${{ env.DEB_VERSION }}
 
 jobs:
   build:
@@ -40,8 +39,8 @@ jobs:
       id: upload-deb
       uses: actions/upload-artifact@v4
       with:
-        name: fzf_${{ env.DEB_VERSION }}_amd64.deb
-        path: ./fzf_${{ env.DEB_VERSION }}_amd64.deb
+        name: "fzf_${{ env.DEB_VERSION }}_amd64.deb" # Using env variable within 'with' section
+        path: "./fzf_${{ env.DEB_VERSION }}_amd64.deb"
 
   test:
     needs: build
