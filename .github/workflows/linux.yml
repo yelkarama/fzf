@@ -49,7 +49,7 @@ jobs:
 
     - name: Upload deb package
       id: upload-deb
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: fzf_${{ steps.build-deb.outputs.version }}_amd64.deb
         path: ./fzf_${{ steps.build-deb.outputs.version }}_amd64.deb
@@ -63,7 +63,7 @@ jobs:
         fetch-depth: 0
 
     - name: Download deb package
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: fzf_${{ steps.build-deb.outputs.version }}_amd64.deb
         path: .
