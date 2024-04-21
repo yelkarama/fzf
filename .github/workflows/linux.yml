@@ -1,5 +1,5 @@
 ---
-name: Test fzf on Linux
+name: Build and Test fzf for Ubuntu
 
 on:
   push:
@@ -30,10 +30,42 @@ jobs:
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.1.0
+        ruby-version: '3.3' # Not needed with a .ruby-version file
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
     - name: Install packages
       run: sudo apt-get install --yes zsh fish tmux
+
+    - name: Install Ruby gems
+      run: sudo gem install --no-document minitest:5.17.0 rubocop:1.43.0 rubocop-minitest:0.25.1 rubocop-performance:1.15.2 fpm
+
+    - name: Build deb package
+      id: build-deb
+      run: |
+        version=$(git describe --tags)
+        fpm -s dir -t deb -n fzf -v $version --prefix /usr .
+        echo "::set-output name=version::$version"
+
+    - name: Upload deb package
+      id: upload-deb
+      uses: actions/upload-artifact@v2
+      with:
+        name: fzf-${{ steps.build-deb.outputs.version }}.deb
+        path: ./fzf-${{ steps.build-deb.outputs.version }}.deb
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Download deb package
+      uses: actions/download-artifact@v2
+      with:
+        name: fzf.deb
+        path: .
 
     - name: Install Ruby gems
       run: sudo gem install --no-document minitest:5.17.0 rubocop:1.43.0 rubocop-minitest:0.25.1 rubocop-performance:1.15.2
