@@ -13,6 +13,7 @@ permissions:
 
 env:
   LANG: C.UTF-8
+  DEB_VERSION: ${{ git describe --tags || git rev-parse --short HEAD }}
 
 jobs:
   build:
@@ -27,23 +28,10 @@ jobs:
       with:
         go-version: "1.20"
 
-    - name: Setup Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.3' # Not needed with a .ruby-version file
-        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-
-    - name: Install packages
-      run: sudo apt-get install --yes zsh fish tmux
-
-    - name: Install Ruby gems
-      run: sudo gem install --no-document minitest:5.17.0 rubocop:1.43.0 rubocop-minitest:0.25.1 rubocop-performance:1.15.2 fpm
-
     - name: Build deb package
       id: build-deb
       run: |
-        # version=$(git describe --tags)
-        version=$(git rev-parse --short HEAD)
+        version=$(git describe --tags || git rev-parse --short HEAD)
         fpm -s dir -t deb -n fzf -v $version --prefix /usr .
         # name: Save state
         echo "{name}={value}" >> $GITHUB_STATE
@@ -54,8 +42,8 @@ jobs:
       id: upload-deb
       uses: actions/upload-artifact@v4
       with:
-        name: fzf_${{ steps.build-deb.outputs.version }}_amd64.deb
-        path: ./fzf_${{ steps.build-deb.outputs.version }}_amd64.deb
+        name: fzf_${{ env.DEB_VERSION }}_amd64.deb
+        path: ./fzf_${{ env.DEB_VERSION }}_amd64.deb
 
   test:
     needs: build
@@ -68,12 +56,12 @@ jobs:
     - name: Download deb package
       uses: actions/download-artifact@v4
       with:
-        name: fzf_${{ steps.build-deb.outputs.version }}_amd64.deb
+        name: fzf_${{ env.DEB_VERSION }}_amd64.deb
         path: .
 
     - name: Install deb package and run commands
       run: |
-        sudo dpkg -i fzf_${{ steps.build-deb.outputs.version }}_amd64.deb
+        sudo dpkg -i fzf_${{ env.DEB_VERSION }}_amd64.deb
         fzf --version
         eval $(fzf --bash)
         dpkg -L fzf
