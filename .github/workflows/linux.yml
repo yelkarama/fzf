@@ -28,7 +28,15 @@ jobs:
         go-version: "1.20"
 
     - name: Install packages
-      run: sudo apt-get install --yes build-essential fpm
+      run: sudo apt-get install --yes build-essential
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.3
+
+    - name: Install Ruby gems
+      run: sudo gem install --no-document fpm
 
     - name: Build deb package
       id: build-deb
