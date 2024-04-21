@@ -13,7 +13,7 @@ permissions:
 
 env:
   LANG: C.UTF-8
-  DEB_VERSION: ${{ git describe --tags || git rev-parse --short HEAD }}
+  DEB_VERSION: ${{ describe --tags || git rev-parse --short HEAD }}
 
 jobs:
   build:
