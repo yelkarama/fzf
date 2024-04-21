@@ -45,7 +45,10 @@ jobs:
         # version=$(git describe --tags)
         version=$(git rev-parse --short HEAD)
         fpm -s dir -t deb -n fzf -v $version --prefix /usr .
-        echo "::set-output name=version::$version"
+        # name: Save state
+        echo "{name}={value}" >> $GITHUB_STATE
+        # Set output
+        echo "{name}={value}" >> $GITHUB_OUTPUT
 
     - name: Upload deb package
       id: upload-deb
