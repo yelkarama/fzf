@@ -51,8 +51,8 @@ jobs:
       id: upload-deb
       uses: actions/upload-artifact@v2
       with:
-        name: fzf-${{ steps.build-deb.outputs.version }}_amd64.deb
-        path: ./fzf-${{ steps.build-deb.outputs.version }}_amd64.deb
+        name: fzf_${{ steps.build-deb.outputs.version }}_amd64.deb
+        path: ./fzf_${{ steps.build-deb.outputs.version }}_amd64.deb
 
   test:
     needs: build
