@@ -17,7 +17,7 @@ env:
 jobs:
   build:
     outputs:
-      version: ${{ steps.build-deb.outputs.VERSION }}
+      version: ${{ steps.build-deb.outputs.version }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -43,17 +43,17 @@ jobs:
     - name: Build deb package
       id: build-deb
       run: |
-        version=$(git describe --tags || git rev-parse --short HEAD)
+        version=$(git describe --tags 2>/dev/null || git rev-parse --short HEAD)
         fpm -s dir -t deb -n fzf -v $version --prefix /usr .
-        echo "{VERSION}={$version}" >> "$GITHUB_OUTPUT"
+        echo "{version}={$version}" >> "$GITHUB_OUTPUT"
         echo $GITHUB_OUTPUT
 
     - name: Upload deb package
       id: upload-deb
       uses: actions/upload-artifact@v4
       with:
-        name: "fzf_${{ steps.build-deb.outputs.VERSION }}_amd64.deb"
-        path: "./fzf_${{ steps.build-deb.outputs.VERSION }}_amd64.deb"
+        name: "fzf_${{ steps.build-deb.outputs.version }}_amd64.deb"
+        path: "./fzf_${{ steps.build-deb.outputs.version }}_amd64.deb"
 
   test:
     needs: build
@@ -66,12 +66,12 @@ jobs:
     - name: Download deb package
       uses: actions/download-artifact@v4
       with:
-        name: fzf_${{needs.build.outputs.VERSION}}_amd64.deb
+        name: fzf_${{ needs.build.outputs.version }}_amd64.deb
         path: .
 
     - name: Install deb package and run commands
       run: |
-        sudo dpkg -i fzf_${{needs.build.outputs.VERSION}}_amd64.deb
+        sudo dpkg -i fzf_${{ needs.build.outputs.VERSION }}_amd64.deb
         fzf --version
         eval $(fzf --bash)
         dpkg -L fzf
